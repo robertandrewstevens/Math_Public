@@ -1,0 +1,105 @@
+---
+title: "DEiR01"
+author: "Robert A. Stevens"
+date: "July 1, 2016"
+output: html_document
+---
+
+```{r, comment=FALSE}
+library(deSolve)
+library(scatterplot3d)
+```
+
+# Differential Equations in R
+
+by Karline Soetaert & Thomas Petzoldt
+
+Tutorial useR conference, June 24, 2014
+
+http://desolve.r-forge.r-project.org/user2014/
+
+## Introduction
+
+### Outline
+
+- How to specify a model
+
+- An overview of solver functions
+
+- Plotting, scenario comparison
+
+- Fitting models to data
+
+- Forcing functions and events
+
+- Partial differential equations with ReacTran
+
+- Speeding up
+
+## Installing
+
+Download R from the CRAN website: http://cran.r-project.org/
+
+Install a suitable editor, e.g. RStudio
+
+Packages can be installed from within R or Rstudio
+
+or via the command line
+
+    install.packages("deSolve", dependencies = TRUE)
+
+### Several packages deal with differential equations
+
+- deSolve: main integration package
+
+- rootSolve: steady-state solver
+
+- bvpSolve: boundary value problem solvers
+
+- deTestSet: ODE and DAE test set + additional solvers
+
+- ReacTran: partial differential equations
+
+- simecol: interactive environment for implementing models
+
+All packages have at least one author in common → consistent interface.
+
+More, see CRAN Task View: Differential Equations
+
+## Getting help
+
+```
+?deSolve
+```
+
+- opens the main help page containing
+    + a short explanation
+    + a link to the main manual (vignette) “Solving Initial Value Differential Equations in R”
+    + links to additional manuals, papers and online resources
+    + references
+    + a first example
+
+- all our packages have such a ?<packagename> help file.
+
+```
+example(deSolve)
+```
+
+```{r, comment=FALSE}
+# Chaos in the atmosphere
+Lorenz <- function(t, state, parameters) {
+  with(as.list(c(state, parameters)), {
+    dX <-  a*X + Y*Z
+    dY <-  b*(Y - Z)
+    dZ <- -X*Y + c*Y - Z
+    list(c(dX, dY, dZ))
+  })
+}
+parameters <- c(a = -8/3, b = -10, c = 28)
+state      <- c(X = 1, Y = 1, Z = 1)
+times      <- seq(0, 100, by = 0.01)
+out <- ode(y = state, times = times, func = Lorenz, parms = parameters)
+plot(out)
+# add a 3D figure if package scatterplot3D is available
+scatterplot3d(out[, -1], type = "l")
+```

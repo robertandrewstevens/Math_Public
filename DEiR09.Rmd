@@ -1,0 +1,15 @@
+---
+title: "DEiR01"
+author: "Robert A. Stevens"
+date: "July 1, 2016"
+output: html_document
+---
+
+```{r, comment=FALSE}
+
+```
+
+Differential Equations in R 
+
+by Karline Soetaert & Thomas Petzoldt
+

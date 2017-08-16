@@ -1,0 +1,221 @@
+---
+title: "DEiR02"
+author: "Robert A. Stevens"
+date: "July 1, 2016"
+output: html_document
+---
+
+```{r, comment=FALSE}
+library(deSolve)
+library(scatterplot3d)
+```
+
+# Differential Equations in R 
+
+by Karline Soetaert & Thomas Petzoldt
+
+## Introductory example
+
+### Let’s begin...
+
+Model specification
+
+### Logistic growth 
+
+Differential equation
+
+dN/dt = r·N·(1 − N/K)
+
+Analytical solution
+
+Nt = K\*N0\*exp(r\*t)/[K + N0\*(exp(r\*t) − 1)]
+
+R implementation
+
+```{r, comment=FALSE}
+logistic <- function(t, r, K, N0) {
+  K*N0*exp(r*t)/(K + N0*(exp(r*t) - 1))
+}
+plot(0:100, logistic(t = 0:100, r = 0.1, K = 10, N0 = 0.1))
+```
+
+### Numerical simulation in R
+
+Why numerical solutions?
+
+- Not all systems have an analytical solution,
+
+- Numerical solutions allow discrete forcings, events, ...
+
+Why R?
+
+- If standard tool for statistics, why Prog$$$ for dynamic simulations?
+
+- The community and the packages → useR!2014
+
+Numerical solution of the logistic equation
+
+```{r, comment=FALSE}
+model <- function (time, y, parms) {
+  with(as.list(c(y, parms)), {
+  	# Differential equation "similar to formula on paper"
+    dN <- r*N*(1 - N/K) 
+	list(dN)})
+}
+y     <- c(N = 0.1)
+parms <- c(r = 0.1, K = 10)
+times <- seq(0, 100, 1)
+# Numerical methods provided by the deSolve package
+out <- ode(y, times, model, parms)
+plot(out)
+```
+
+### Inspecting output
+
+Print to screen 
+
+```{r, comment=FALSE}
+head(out, n = 4)
+```
+
+Summary
+
+```{r, comment=FALSE}
+summary(out)
+```
+
+Plotting
+
+```{r, comment=FALSE}
+plot(out, main = "logistic growth", lwd = 2)
+```
+
+Diagnostics
+
+```{r, comment=FALSE}
+diagnostics(out)
+```
+
+## Coupled equations
+
+### Coupled ODEs: the rigidODE problem
+
+Problem
+
+- Euler equations of a rigid body without external forces.
+
+- Three dependent variables (y1, y2, y3), the coordinates of the rotation vector,
+
+- I1, I2, I3 are the principal moments of inertia
+
+### Coupled ODEs: the rigidODE equations 
+
+Differential equation
+
+y1′ = (I2−I3)/I1·y2y3 
+
+y2′ = (I3−I1)/I2·y1y3 
+
+y3′ = (I1−I2)/I3·y1y2
+
+Parameters
+
+I1 = 0.5
+
+I2 = 2
+
+I3 = 3
+
+Initial conditions
+
+y1(0) = 1
+
+y2(0) = 0
+
+y3(0) = 0.9
+
+### Coupled ODEs: the rigidODE problem 
+
+R implementation
+
+```{r, comment=FALSE}
+rigidode <- function(t, y, parms) {
+	dy1 <- -2.00*y[2]*y[3] 
+	dy2 <-  1.25*y[1]*y[3] 
+	dy3 <- -0.50*y[1]*y[2] 
+	list(c(dy1, dy2, dy3))
+}
+yini  <- c(y1 = 1, y2 = 0, y3 = 0.9)
+times <- seq(from = 0, to = 20, by = 0.01)
+out   <- ode(times = times, y = yini, func = rigidode, parms = NULL)
+head(out, n = 3)
+```
+
+### Coupled ODEs: plotting the rigidODE problem
+
+```{r, comment=FALSE}
+plot(out)
+par(mar = c(0, 0, 0, 0)) 
+scatterplot3d(out[, -1])
+```
+
+### Exercise
+
+The Rossler equations
+
+y1′ = −y2 − y3
+
+y2′ = y1 + a·y2
+
+y3′ = b + y3·(y1 − c)
+
+Initial Conditions
+
+y1 = 1
+
+y2 = 1
+
+y3 = 1 
+
+Parameters
+
+a = 0.2
+
+b = 0.2
+
+c = 5
+
+Tasks
+
+- Solve the ODEs on the interval [0, 100]
+
+- Produce a 3-D phase-plane plot
+
+- Use file examples/rigidODE.R.txt as a template
+
+```{r, comment=FALSE}
+Rossler <- function(t, y, parms) {
+  # Parameters (pass into function?)
+  a <- 0.2
+  b <- 0.2
+  c <- 5
+  #
+  dy1 <- -y[2] - y[3]
+  dy2 <-  y[1] + a*y[2]
+  dy3 <-  b + y[3]*(y[1] - c)
+  list(c(dy1, dy2, dy3))
+}
+yini  <- c(y1 = 1, y2 = 1, y3 = 1)
+times <- seq(from = 0, to = 20, by = 0.01)
+out   <- ode(times = times, y = yini, func = Rossler, parms = NULL)
+head(out, n = 3)
+
+#plotting the solutions
+plot(out)
+par(mar = c(0, 0, 0, 0)) 
+scatterplot3d(out[, -1])
+```
+
+[3] E. Hairer, S. P. Norsett, and G Wanner. Solving Ordinary Differential Equations I: Nonstiff roblems. Second Revised Edition. Springer-Verlag, Heidelberg, 2009
+
+[13] O.E. Rossler. An equation for continous chaos. Physics Letters A, 57 (5):397-398, 1976.

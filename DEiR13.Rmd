@@ -1,0 +1,62 @@
+---
+title: "DEiR13"
+author: "Robert A. Stevens"
+date: "July 1, 2016"
+output: html_document
+---
+
+# Differential Equations in R 
+
+by Karline Soetaert & Thomas Petzoldt
+
+## Bibliography
+
+[1] K E Brenan, S L Campbell, and L R Petzold. Numerical Solution of Initial-Value Problems in Differential-Algebraic Equations. SIAM Classics in Applied Mathematics, 1996.
+
+[2] P N Brown, G D Byrne, and A C Hindmarsh. Vode, a variable-coefficient ode solver. SIAM Journal on Scientific and Statistical Computing, 10:1038–1051, 1989.
+
+[3] E Hairer, S. P. Norsett, and G Wanner. Solving Ordinary Differential Equations I: Nonstiff Problems. Second Revised Edition. Springer-Verlag, Heidelberg, 2009.
+
+[4] E Hairer and G Wanner. Solving Ordinary Differential Equations II: Stiff and Differential-Algebraic Problems. Second Revised Edition. Springer-Verlag, Heidelberg, 2010.
+
+[5] A. C. Hindmarsh. ODEPACK, a systematized collection of ODE solvers. In R. Stepleman, editor, Scientific Computing, Vol. 1 of IMACS Transactions on Scientific Computation, pages 55–64. IMACS / North-Holland, Amsterdam, 1983.
+
+[6] W. Hundsdorfer and J.G. Verwer. Numerical Solution of Time-Dependent Advection-Diffusion-Reaction Equations. Springer Series in Computational Mathematics. Springer-Verlag, Berlin, 2003.
+
+[7] R. Lefever, G. Nicolis, and I. Prigogine. On the occurrence of oscillations around the steady state in systems of chemical reactions far from equilibrium. Journal of Chemical Physics, 47:1045–1047, 1967.
+
+[8] Friedrich Leisch. Dynamic generation of statistical reports using literate data analysis. In W. Hardle and B. Ronz, editors, COMPSTAT 2002 – Proceedings in Computational Statistics, pages 575–580, Heidelberg, 2002. Physica-Verlag.
+
+[9] M. C. Mackey and L. Glass. Oscillation and chaos in physiological control systems. Science, 197:287–289, 1977.
+
+[10] Linda R. Petzold. Automatic selection of methods for solving stiff and nonstiff systems of ordinary differential equations. SIAM Journal on Scientific and Statistical Computing, 4:136–148, 1983.
+
+[11] R Development Core Team. R: A Language and Environment for Statistical Computing. R Foundation for Statistical Computing, Vienna, Austria, 2011. ISBN 3-900051-07-0.
+
+[12] H. H. Robertson. The solution of a set of reaction rate equations. In J. Walsh, editor, Numerical Analysis: An Introduction, pages 178–182. Academic Press, London, 1966.
+
+[13] O.E. Rossler. An equation for continous chaos.
+Physics Letters A, 57 (5):397–398, 1976.
+
+[14] L. F. Shampine, I. Gladwell, and S. Thompson. Solving ODEs with MATLAB. Cambridge University Press, Cambridge, 2003.
+
+[15] L.F Shampine and S. Thompson. Solving ddes in matlab.
+App. Numer. Math., 37:441–458, 2001.
+
+[16] K Soetaert, T Petzoldt, and RW Setzer. R-package deSolve, Writing Code in Compiled Languages, 2009. package vignette.
+
+[17] Karline Soetaert. rootSolve: Nonlinear root finding, equilibrium and steady-state analysis of ordinary differential equations, 2009. R package version 1.6.
+
+[18] Karline Soetaert and Filip Meysman. Reactive transport in aquatic ecosystems: Rapid model prototyping in the open source software r. Environmental Modelling & Software, 32:49–60, 2012.
+
+[19] Karline Soetaert and Thomas Petzoldt. Inverse modelling, sensitivity and monte carlo analysis in R using package FME. Journal of Statistical Software, 33(3):1–28, 2010.
+
+[20] Karline Soetaert and Thomas Petzoldt. Solving ODEs, DAEs, DDEs and PDEs in R. Journal of Numerical Analysis, Industrial and Applied Mathematics, in press, 2011.
+
+[21] Karline Soetaert, Thomas Petzoldt, and R. Woodrow Setzer. Solving Differential Equations in R. The R Journal, 2(2):5–15, December 2010.
+
+[22] Karline Soetaert, Thomas Petzoldt, and R. Woodrow Setzer. Solving differential equations in R: Package deSolve. Journal of Statistical Software, 33(9):1–25, 2010.
+
+[23] Stefan Theußl and Achim Zeileis. Collaborative Software Development Using R-Forge. The R Journal, 1(1):9–14, May 2009.
+
+[24] B. van der Pol and J. van der Mark. Frequency demultiplication. Nature, 120:363–364, 1927.
