@@ -1,0 +1,174 @@
+---
+title: "Gillett00"
+author: "Robert A. Stevens"
+date: "April 17, 2016"
+output: html_document
+---
+
+*Calculus and Analytic Geometry* by Philip Gillett (1981)
+
+# Contents
+
+Note to the Reader
+
+1.0 Prologue to Calculus
+1.1 Real Numbers and the Coordinate Line  
+1.2 The Coordinate Plane and Straight Lines
+1.3 Some Important Curves in the Plane
+1.4 Functions
+1.5 Real Functions
+Additional Problems
+
+2.0 The Derivative
+2.1 Two Equivalent Problems
+2.2 The Derivative of a Real Function
+2.3 Trigonometric Functions
+2.4 Limits (Optional)
+2.5 Properties of Limits
+Additional Problems
+
+3.0 Techniques of Differentiation
+3.1 The Algebra of Derivatives
+3.2 The Power Rule
+3.3 The Chain Rule
+3.4 Derivatives of Implicitly Defined Functions
+Additional Problems
+
+4.0 Continuity and Differentiation
+4.1 Continuity
+4.2 Properties of Continuous Functions
+4.3 The Mean Value Theorem
+4.4 Applications of the Mean Value Theorem
+4.5 Higher-Order Derivatives
+4.6 Linear Approximation
+4.7 The Differential of a Real Function
+Additional Problems
+
+5.0 Application of Differentiation
+5.1 The Derivative as Rate of Change
+5.2 Extreme Values
+5.3 Curve Sketching
+5.4 Solving Equations by Newton’s Method (Optional)
+5.5 Maximum-Minimum Problems
+Additional Problems
+
+6.0 The Integral
+6.1 The Equivalent Problems
+6.2 The Integral of a Real Function
+6.3 Properties of the Integral
+6.4 The Fundamental Theorem of Calculus
+6.5 Integration by Substitution
+Additional Problems
+
+7.0 Applications of Integration
+7.1 Area Between Curves
+7.2 Volume of a Solid Revolution
+7.3 Length of a Curve
+7.4 Area of a Surface of Revolution
+7.5 Work
+7.6 Moments and Centroids
+7.7 Introduction to Differential Equations
+Additional Problems
+
+8.0 Exponential and Logarithmic Functions
+8.1 The Natural Logarithm
+8.2 Inverse Functions
+8.3 The Natural Exponential Function
+8.4 General Exponential and Logarithmic Functions
+8.5 Integration Involving Exponential and Logarithmic Functions
+8.6 Application of Exponential and Logarithmic Functions
+Additional Problems
+
+9.0 Inverse Trigonometric, Hyperbolic, and Inverse Hyperbolic Functions
+9.1 Inverse Trigonometric Functions
+9.2 Integration Involving Inverse Trigonometric Functions
+9.3 Hyperbolic Functions
+9.4 Inverse Hyperbolic Functions
+9.5 The Catenary (Optional)
+Additional Problems
+
+10.0 Techniques of Integration
+10.1 Integration by Parts
+10.2 Trigonometric Substitutions
+10.3 Decomposition of Rational Functions
+10.4 Miscellaneous Integration Problems
+10.5 Numerical Integration
+Additional Problems
+
+11.0 More About Limits
+11.1 Limits Involving Infinity
+11.2 L’Hopital’s Rule and Indeterminate Forms
+11.3 Improper Integrals
+11.4 Other Types of Improper Integrals
+11.5 Taylor Polynomials
+Additional Problems
+
+12.0 Infinite Series
+12.1 Preliminaries
+12.2 The Integral Test
+12.3 Comparison Tests
+12.4 Alternating Series
+12.5 The Ratio test and Root Test
+Additional Problems
+
+13.0 Power Series
+13.1 Functions Defined by Power Series
+13.2 Taylor Series
+13.3 More About Power Series
+13.4 The Binomial Series
+Additional Problems
+
+14.0 Geometry in the Plane
+14.1 Polar Coordinates
+14.2 Conics: The Parabola
+14.3 Conics: The Ellipse and Hyperbola 
+14.4 Area and Length in Polar Coordinates
+14.5 Vectors in the Plane
+14.6 Vector Functions
+14.7 Motion in the Plane
+14.8 More on Curvature and Motion
+Additional Problems
+
+15.0 Geometry in Space
+15.1 Coordinates and Vectors in Space
+15.2 Lines and Planes
+15.3 The Cross Product
+15.4 Quadric Surfaces
+15.5 Cylindrical and Spherical Coordinates
+15.6 Curves in Space
+Additional Problems
+
+16.0 Functions of Several Variables
+16.1 Partial Derivatives
+16.2 Chain Rules and Gradient
+16.3 Tangent Planes and Tangent Lines
+16.4 The Directional Derivative
+16.5 Extreme Values
+16.6 Lagrange Multipliers (Optional)
+Additional Problems
+
+17.0 Multiple Integrals
+17.1 Iterated Integrals in the Plane
+17.2 Double Integrals
+17.3 Double Integrals in Polar Coordinates
+17.4 Surface Area
+17.5 Triple Integrals in Rectangular and Cylindrical Coordinates
+17.6 Triple Integrals in Spherical Coordinates
+Additional Problems
+
+18.0 Vector Fields
+18.1 Line Integrals in the Plane
+18.2 Green’s Theorem
+18.3 Surface Integrals and the Divergence Theorem
+18.4 Line Integrals in Space and Stokes’ Theorem
+Additional Problems
+
+19.0 Differential Equations
+19.1 Ordinary Differential Equations
+19.2 Exact Differential Equations
+19.3 Linear First-Order Equations
+19.4 Second-Order Equations
+19.5 Linear Second-Order Equations
+19.6 constant Coefficients
+19.7 The Nonhomogeneous Case
+Additional Problems

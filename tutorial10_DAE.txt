@@ -1,0 +1,162 @@
+Differential-Algebraic Equations
+
+Solver overview, examples
+
+Two solvers for DAEs in R-package deSolve: 
+
+daspk
+
+- a backward differentiation formula (BDF)
+
+- DAEs of index 1 only
+
+- Can solve DAEs in form My′ = f(x, y) and F(x, y, y′) = 0
+
+radau
+
+- an implicit Runge-Kutta formula (BDF)
+
+- DAEs of index ≤ 3
+
+- Can solve DAEs in form My′ =f(x, y) only
+
+...more in package deTestSet
+
+Options of solver functions
+
+daspk (y, times, func = NULL, parms, dy, res, mass, ...)
+
+radau (y, times, func, parms, nind, mass, ...)
+
+- func and mass: for My′ = f(x, y)
+
+- res: for F(x, y, y′) = 0
+
+- nind: number of variables of index 1, 2, and 3 ⇒ equations should be sorted accordingly
+
+- radau does not require specification of (consistent) initial derivatives (dy)
+
+Implicit DAE: Robertson problem
+
+Problem formulation
+
+A classic problem to test stiff ODE/DAE solvers, given by Robertson (1966), written as a DAE (of index 1):
+
+y1′ =  −0.04*y1 + 10^4*y2*y3 
+
+y2′ = 0.04*y1 − 10^4*y2*y3 − 3*e^7*y2
+
+1 = y1 +y2 +y3
+
+⇒ 
+
+0 = −y1′ − 0.04*y1 + 10^4*y2*y3
+
+0 = −y2′ + 0.04*y1 − 10^4*y2*y3 − 3*e^7*y2
+
+0 = −1 + y1 + y2 + y3
+
+The third equation is to conserve the total concentration of y1 , y2 , y3 
+
+- initial conditions: y1 = 1, y2 = 0, y3 = 0.
+
+- output for t = 10[0, 0.1, 0.2,...10] 
+
+- solve with daspk
+
+Robertson DAE in R
+
+residual function (4 mandatory arguments):
+
+> RobertsonDAE <- function(t, y, dy, parms) {
+  res1 <- -dy[1] - 0.04*y[1] + 1e4*y[2]*y[3]
+  res2 <- -dy[2] + 0.04*y[1] - 1e4*y[2]*y[3] - 3e7* y[2]^2
+  res3 <- - 1 + y[1] + y[2] + y[3]
+  list(c(res1, res2, res3))
+}
+
+initial conditions (values, derivatives):
+
+> yini <-c(y1=1.0,y2=0,y3=0)
+> dyini <- rep(0, 3) # rough guess often good enough
+
+solution:
+> times <- 10^(seq(from = 0, to = 10, by = 0.1))
+> out <- daspk(y = yini, dy = dyini, res = RobertsonDAE, parms = NULL, times = times)
+
+Plotting
+
+> plot(out, log = "x", col = "darkblue", lwd = 2, mfrow=c(1,3))
+
+The pendulum
+
+Problem formulation, an index 3 DAE
+
+Original equations: 
+
+x′ = u
+
+y′ = v
+
+u′ = −λx
+
+v′ = −λy − g
+
+0 = x^2 + y^2 − L^2
+
+⇒
+
+M.y’ = f(x, y)
+
+|1 0 0 0 0| |x′| = |u              |
+|0 1 0 0 0| |y′|   |v              |
+|0 0 1 0 0| |u′|   |−λx            |
+|0 0 0 1 0| |v′|   |−λy − g        |
+|0 0 0 0 0| |λ |   |x^2 + y^2 − L^2|
+
+- initial conditions: x = 1, y = 0, u = 0, v = 1, λ = 1
+
+- x and y variables of index 1, u, v of index 2, λ of index 3
+
+- solve in [0, 10]
+
+[1, 4]
+
+Pendulum problem in R
+
+derivative function:
+
+> pendulum <- function (t, Y, parms) { 
+  with (as.list(Y),
+    list(c(u, 
+           v,
+           -lam * x,
+           -lam * y - 9.8, 
+           x^2 + y^2 -1)))
+}
+
+mass matrix and index vector:
+
+> M <- diag(nrow = 5) 
+> M[5, 5] <- 0
+> index <- c(2, 2, 1)
+
+initial conditions:
+
+> yini <- c(x = 1, y = 0, u = 0, v = 1, lam = 1)
+
+solution :
+
+> times <- seq(from = 0, to = 10, by = 0.01)
+> out <- radau (y = yini, func = pendulum, parms = NULL, times = times, mass = M, nind = index)
+
+Plotting
+
+> plot(out, type = "l", lwd = 2)
+> plot(out[, c("x", "y")], type = "l", lwd = 2)
+
+[1] Brenan, K. E., Campbell, S. L. and Petzold, L. R. (1996) Numerical Solution of Initial-Value Problems in Differential-Algebraic Equations. SIAM Classics in Applied Mathematics.
+
+[4] Hairer, E. and Wanner, G. (2010) Solving Ordinary Differential Equations II: Stiff and Differential-Algebraic Problems. Second Revised Edition, Springer-Verlag.
+
+[12] Robertson, H. H. (1966) The solution of a set of reaction rate equations. In Walsh, J. (ed.) Numerical Analysis: An Introduction, Academic Press, 178-182

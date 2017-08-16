@@ -1,0 +1,254 @@
+Steady-state
+
+Solver overview, 1-D, 2-D, 3-D
+
+Solvers
+
+Two packages for Steady-state solutions:
+
+ReacTran: methods for numerical approximation of PDEs
+
+- tran.1D(C, C.up, C.down, D, v, ...) 
+
+- tran.2D, tran.3D
+
+rootSolve: special solvers for roots
+
+- steady for 0-D models
+
+- steady.1D, steady.2D, steady.3D for 1-D, 2-D, 3-D models
+
+Steady-state Solver overview: package rootSolve 
+
+Simple problems can be solved iteratively
+
+Function Description
+
+stode: steady-state ODEs by Newton-Raphson method, full or banded Jacobian
+
+stodes: steady-state ODEs by Newton-Raphson method, arbi- trary sparse Jacobian
+
+Others are solved by dynamically running to steady-state
+
+- steady(... method = "runsteady") for 0-D models
+
+- steady.1D(... method = "runsteady") for 1-D models
+
+- no special solver for higher dimensions - but use ode.2D, ode.3D from deSolve for sufficiently long time
+
+(adapted from [21])
+
+Options of solver functions 
+
+Top level function
+
+> steady(y, time = NULL, func, parms, method = "stode", ...)
+
+Workhorse function: the individual solver
+
+> stode(y, time = 0, func, parms = NULL, rtol = 1e-06, atol = 1e-08, ctol = 1e-08, jacfunc = NULL, jactype = "fullint", verbose = FALSE, bandup = 1, banddown = 1, positive = FALSE, maxiter = 100, ynames = TRUE, dllname = NULL, initfunc = dllname, initpar = parms, rpar = NULL, ipar = NULL, nout = 0, outnames = NULL, forcings = NULL, initforc = NULL, fcontrol = NULL, ...)
+
+Notes
+
+- positive = TRUE forces to find relevant solutions for quantitities that can not be negative.
+
+- ynames can be used to label the output – useful for plotting
+
+1-D problem: polluted estuary
+
+Problem formulation
+
+Ammonia and oxygen are described in an estuary. They react to form nitrate. The concentrations are at steady state.
+
+0 = ∂/∂x(D∂NH3/∂x) − v*∂NH3/∂x − rnit  
+
+0 = ∂/∂x(D∂O2/∂x) − v*∂O2/∂x − 2(rnit) + p·(O2s − O2)  
+
+rnit = r·NH3·O2/(O2 + k)
+
+- parameters: k = 1, r = 0.1, p = 0.1, O2s = 300, v = 1000, D = 1e7 
+
+- The estuary is 100 km long.
+
+- The boundary conditions are: NH3(0) = 500, O2(0) = 50, NH3(1e5) = 10, O2(1e5) = 30
+
+Polluted estuary in R
+
+define grid:
+
+> require(ReacTran)
+> N <- 1000
+> Grid <- setup.grid.1D(N = N, L = 100000)
+
+derivative function:
+
+> Estuary <- function(t, y, parms) {
+	NH3 <- y[1:N]
+	O2 <- y[(N+1):(2*N)]
+	tranNH3<- tran.1D (C = NH3, D = 1e7, v = 1000,
+		C.up = 500, C.down = 10, dx = Grid)$dC 
+	tranO2 <- tran.1D (C = O2 , D = 1e7, v = 1000,
+		C.up = 100, C.down = 250, dx = Grid)$dC
+	r_nit <- 0.1*O2/(O2 + 1)*NH3
+	dNH3 <- tranNH3 - r_nit
+	dO2 <- tranO2 - 2*r_nit + 0.1*(300 - O2)
+	list(c( dNH3, dO2 ), r_nit = r_nit)
+}
+
+numerical solution:
+
+> print(system.time(
+	std <- steady.1D(y = runif(2 * N), 
+					 parms = NULL, 
+					 names=c("NH3", "O2"), 
+					 func = Estuary, 
+					 dimens = N, 
+					 positive = TRUE)))
+
+Plotting
+
+> plot(std, which = c("NH3", "O2", "r_nit"), lwd = 2,
+ mfrow = c(1,3), grid = Grid$x.mid, xlab = "distance, m",
+ ylab = c("mmol m-3", "mmol m-3", "mmol m-3 d-1"))
+
+Plotting with Observations
+
+> obs <- data.frame(
+	x = seq(0, 9e4, by = 1e4),
+	O2 = c(100, 0, 0, 100, 150, 200, 250, 300, 300, 300))
+
+> plot(std, 
+	   which = c("NH3", "O2", "r_nit"), 
+	   lwd = 2,
+	   obs = obs, 
+	   obspar = list(pch = 18, col = "red", cex = 2),
+	   grid = Grid$x.mid, 
+	   xlab = "distance, m",
+	   ylab = c("mmol m-3", "mmol m-3", "mmol m-3 d-1"),
+	   mfrow=c(1,3))
+
+Steady-state of a 2-D PDE
+
+Problem formulation
+
+A relatively stiff PDE is the combustion problem, describing diffusion and reaction in a 2-dimensional domain (from [6]). The steady-state problem
+is:
+
+0 = −∇*(−K*∇*U)+ (R/(α*δ)*(1 + α − U)*exp(δ*(1 − 1/U)) 
+
+- The domain is rectangular ([0,1]*[0,1])
+
+- K = 1, α = 1, δ = 20, R = 5
+
+- Downstream boundary is prescribed as a known value (1)
+
+- Upstream boundary: zero-flux
+
+2-D combustion problem in R
+
+grid and parameters:
+
+> library(ReacTran)
+> N <-100
+> Grid <- setup.grid.1D(0, 1, N = N) 
+> alfa <- 1; delta <- 20; R <- 5
+
+derivative function:
+
+> Combustion <- function(t, y, p) {
+	U <- matrix(nrow = N, ncol = N, data = y)
+	reac <- R/alfa/delta*(1 + alfa - U)*exp(delta*(1 - 1/U))
+	tran <- tran.2D(C = U, 
+					D.x = 1, 
+					flux.x.up = 0, 
+					flux.y.up = 0, 
+					C.x.down = 1,
+					C.y.down = 1, 
+					dx = Grid, 
+					dy = Grid) 
+	list(tran$dC+ reac)
+}
+
+solution (10000 equations):
+
+> print(system.time(
+ std <- steady.2D(y = rep(1, N*N), 
+				   parms = NULL, 
+				   func = Combustion, 
+				   nspec = 1,
+				   dimens = c(N, N), 
+				   lrw = 1e6, 
+				   positive = TRUE)))
+
+Plotting
+
+> image(std, main = "Combustion", legend = TRUE)
+
+Steady-state of a 3-D PDE
+
+Problem formulation
+
+3-D problems are computationally heavy - only smaller problems can be solved in R
+
+Model of diffusion and simple reaction in a 3-dimensional domain.
+
+0 = −∇*(−D*∇*Y ) − r*Y
+
+- The domain is rectangular ([0, 1]∗[0, 1]∗[0, 1]) 
+
+- D = 1, r = 0.025
+
+- Initial condition: constant: U(x, y, 0) = 1
+
+- Upstream and Downstream boundaries: = 1
+
+3-D problem in R
+
+grid and parameters:
+
+> library(ReacTran)
+> n <-20
+> Grid <- setup.grid.1D(0, 1, N = n)
+
+derivative function:
+
+> diffusion3D <- function(t, Y, par) {
+	yy <- array(dim = c(n, n, n), data = Y) # vector to 3-D array 
+	dY <- -0.025 * yy # consumption
+	BND <- matrix(nrow = n, ncol = n, 1) # boundary concentration
+
+	dY <- dY + tran.3D(C = yy,
+					   C.x.up = BND, 
+					   C.y.up = BND, 
+					   C.z.up = BND, 
+					   C.x.down = BND, 
+					   C.y.down = BND, 
+					   C.z.down = BND, 
+					   D.x = 1, 
+					   D.y = 1, 
+					   D.z = 1,
+					   dx = Grid, 
+					   dy = Grid, 
+					   dz = Grid)$dC
+	return(list(dY))
+}
+
+solution (10000 equations):
+
+> print(system.time(
+ ST3 <- steady.3D(y = rep(1, n*n*n), 
+				   func = diffusion3D, 
+				   parms = NULL, 
+				   pos = TRUE, 
+				   dimens = c(n, n, n), 
+				   lrw = 2000000)))
+
+Plotting
+
+a selection of 2-D projections, in the x-direction
+
+> image(ST3, mfrow = c(2, 2), add.contour = TRUE, legend = TRUE, dimselect = list(x = c(4, 8, 12, 16)))
+
+[18] Soetaert, K. and Meysman, F. (2012) Reactive transport in aquatic ecosystems: Rapid model prototyping in the open source software, R Environmental Modelling and Software 32, 49–60
+
+[21] Soetaert, K., Petzoldt, T. and Setzer, R. W. (2010 Solving Differential Equations in R, The R Journal, 2010, 2, 5-15

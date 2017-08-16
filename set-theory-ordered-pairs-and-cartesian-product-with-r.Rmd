@@ -1,0 +1,235 @@
+---
+title: "SET THEORY ORDERED PAIRS AND CARTESIAN PRODUCT WITH R"
+author: "Robert A. Stevens"
+date: "August 5, 2017"
+output: html_document
+---
+
+http://www.aaronschlegel.com/set-theory-ordered-pairs-and-cartesian-product-with-r/
+
+Part 5 of 5 in the series Set Theory
+
+1. Introduction to Set Theory and Sets with R
+
+2. Set Operations Unions and Intersections in R
+
+3. Set Theory Arbitrary Union and Intersection Operations with R
+
+4. Algebra of Sets in R
+
+5. Set Theory Ordered Pairs and Cartesian Product with R
+
+## Ordered and Unordered Pairs
+
+A pair set is a set with two members, for example, {2, 3}, which can also be thought of as an unordered pair, in that {2, 3} = {3, 2}. However, we seek a more a strict and rich object that tells us more about two sets and how their elements are ordered. Call this object $\langle$ 2, 3 $\rangle$, which specifies that 2 is the first component and 3 is the second component. We also make the requirement that $\langle$ 2, 3 $\rangle$ $\neq$ $\langle$ 3, 2 $\rangle$. We can also represent this object, generalized as $\langle$ x, y $\rangle$, as:
+
+$\langle$ x, y $\rangle$ = $\langle$ u, v $\rangle$
+
+Therefore x = u and y = v. This property is useful in the formal definition of an ordered pair, which is stated here but not explored in-depth. The currently accepted definition of an ordered pair was given by Kuratowski in 1921 (Enderton, 1977, pp. 36), though there exist several other definitions.
+
+$\langle$ x, y $\rangle$ = {{x}, {x, y}}
+
+The pair $\langle$ x, y $\rangle$ can be represented as a point on a Cartesian coordinate plane.
+
+## Cartesian Product
+
+The Cartesian product **A** $\times$ **B** of two sets **A** and **B** is the collection of all ordered pairs $\langle$ x, y $\rangle$ with x $\in$ A and y $\in$ B. Therefore, the Cartesian product of two sets is a set itself consisting of ordered pair members. A set of ordered pairs is defined as a 'relation.'
+
+For example, consider the sets **A** = {1, 2, 3} and **B** = {2, 4, 6}. The Cartesian product **A** $\times$ **B** is then:
+
+**A** $\times$ **B** = {{1, 2}, {1, 4}, {1, 6}, {2, 2}, {2, 4}, {2, 6}, {3, 2}, {3, 4}, {3, 6}}
+
+Whereas the Cartesian product **B** $\times$ **A** is:
+
+**B** $\times$ **A** = {{2, 1}, {2, 2}, {2, 3}, {4, 1}, {4, 2}, {4, 3}, {6, 1}, {6, 2}, {6, 3}}
+
+The following function implements computing the Cartesian product of two sets **A** and **B**.
+
+```{r, comment=NA}
+cartesian <- function(a, b) {
+  axb <- list()
+  k <- 1
+  for(i in a) {
+    for(j in b) {
+      axb[[k]] <- c(i, j)
+      k <- k + 1
+    }
+  }
+  return(axb)
+}
+
+my.cartesian <- function(a, b) {
+  ab <- expand.grid(a, b)
+  tab <- t(ab)
+  tab.df <- as.data.frame(tab)
+  tab.list <- as.list(tab.df)
+  return(tab.list)
+}
+```
+
+Let's use the function to calculate the Cartesian product **A** $\times$ **B** and **B** $\times$ **A** to see if it aligns with our results above.
+
+```{r, comment=NA}
+a <- c(1, 2, 3)
+b <- c(2, 4, 6)
+
+as.data.frame(cartesian(a, b))
+as.data.frame(cartesian(b, a))
+
+as.data.frame(my.cartesian(a, b))
+as.data.frame(my.cartesian(b, a))
+```
+
+Both outputs agree to our previous results. One could also simply use the expand.grid() function like so to get the same result for the Cartesian product. Thanks a lot to Jeff in the comments for reminding me about the expand.grid() function.
+
+```{r, comment=NA}
+t(expand.grid(a, b))
+t(expand.grid(b, a))
+```
+
+## Some Cartesian Product Theorems
+
+We can state some theorems related to the Cartesian product of two sets. The first theorem states:
+
+If **A** is a set, then **A** $\times$ $\varnothing$ = $\varnothing$ and $\varnothing$ $\times$ **A** = $\varnothing$.
+
+We can demonstrate this theorem with our cartesian() function.
+
+```{r, comment=NA}
+# c() represents the empty set.
+cartesian(a, c()) 
+cartesian(c(), a)
+
+my.cartesian(a, c()) 
+my.cartesian(c(), a)
+```
+
+The outputs are an empty list which is equivalent to the empty set $\varnothing$ for our purposes of demonstration.
+
+The next theorem involves three sets **A**, **B**, **C**.
+
+**A** $\times$ (**B** $\cap$ **C**) = (**A** $\times$ **B**) $\cap$ (**A** $\times$ **C**)
+
+**A** $\times$ (**B** $\cup$ **C**) = (**A** $\times$ **B**) $\cup$ (**A** $\times$ **C**)
+
+(**A** $\cap$ **B**) $\times$ **C** = (**A** $\times$ **C**) $\cap$ (**B** $\times$ **C**)
+
+(**A** $\cup$ **B**) $\times$ **C** = (**A** $\times$ **C**) $\cup$ (**B** $\times$ **C**)
+
+We can demonstrate each in turn with a combination of our cartesian() from above, and the set.union() and set.intersection() functions from a previous post on set unions and intersections. The base R functions union() and intersect() can be used instead of the functions we defined previously.
+
+```{r, comment=NA}
+a <- c(1, 2, 3)
+b <- c(2, 4, 6)
+c <- c(1, 4, 7)
+```
+
+The first identity 
+
+**A** $\times$ (**B** $\cap$ **C**) = (**A** $\times$ **B**) $\cap$ (**A** $\times$ **C**)
+
+```{r, comment=NA}
+#ident1.rhs <- cartesian(a, set.intersection(b, c)) # Right-hand Side
+#ident1.lhs <- set.intersection(cartesian(a, b), cartesian(a, c)) # Left-hand Side
+ident1.rhs <- cartesian(a, intersect(b, c)) # Right-hand Side
+ident1.lhs <- intersect(cartesian(a, b), cartesian(a, c)) # Left-hand Side
+
+#isequalset(ident1.rhs, ident1.lhs)
+setequal(ident1.rhs, ident1.lhs)
+
+as.data.frame(ident1.rhs)
+as.data.frame(ident1.lhs)
+
+ident1.rhs <- my.cartesian(a, intersect(b, c)) # Right-hand Side
+ident1.lhs <- intersect(my.cartesian(a, b), my.cartesian(a, c)) # Left-hand Side
+
+setequal(ident1.rhs, ident1.lhs)
+
+as.data.frame(ident1.rhs)
+as.data.frame(ident1.lhs)
+
+```
+
+The second identity 
+
+**A** $\times$ (**B** $\cup$ **C**) = (**A** $\times$ **B**) $\cup$ (**A** $\times$ **C**)
+
+```{r, comment=NA}
+#ident2.rhs <- cartesian(a, set.union(b, c))
+#ident2.lhs <- set.union(cartesian(a, b), cartesian(a, c))
+ident2.rhs <- cartesian(a, union(b, c))
+ident2.lhs <- union(cartesian(a, b), cartesian(a, c))
+
+#isequalset(ident2.rhs, ident2.lhs)
+setequal(ident2.rhs, ident2.lhs)
+
+as.data.frame(ident2.rhs)
+as.data.frame(ident2.lhs)
+
+ident2.rhs <- my.cartesian(a, union(b, c))
+ident2.lhs <- union(my.cartesian(a, b), my.cartesian(a, c))
+
+#isequalset(ident2.rhs, ident2.lhs)
+setequal(ident2.rhs, ident2.lhs)
+
+as.data.frame(ident2.rhs)
+as.data.frame(ident2.lhs)
+```
+
+The third identity 
+
+(**A** $\cap$ **B**) $\times$ **C** = (**A** $\times$ **C**) $\cap$ (**B** $\times$ **C**)
+
+```{r, comment=NA}
+#ident3.rhs <- cartesian(set.intersection(a, b), c)
+#ident3.lhs <- set.intersection(cartesian(a, c), cartesian(b, c))
+ident3.rhs <- cartesian(intersect(a, b), c)
+ident3.lhs <- intersect(cartesian(a, c), cartesian(b, c))
+
+#isequalset(ident3.rhs, ident3.lhs)
+setequal(ident3.rhs, ident3.lhs)
+
+as.data.frame(ident3.rhs)
+as.data.frame(ident3.lhs)
+
+ident3.rhs <- my.cartesian(intersect(a, b), c)
+ident3.lhs <- intersect(my.cartesian(a, c), my.cartesian(b, c))
+
+setequal(ident3.rhs, ident3.lhs)
+
+as.data.frame(ident3.rhs)
+as.data.frame(ident3.lhs)
+```
+
+We finish the post with the fourth identity 
+
+(**A** $\cup$ **B**) $\times$ **C** = (**A** $\times$ **C**) $\cup$ (**B** $\times$ **C**)
+
+```{r, comment=NA}
+#ident4.rhs <- cartesian(set.union(a, b), c)
+#ident4.lhs <- set.union(cartesian(a, c), cartesian(b, c))
+ident4.rhs <- cartesian(union(a, b), c)
+ident4.lhs <- union(cartesian(a, c), cartesian(b, c))
+
+#isequalset(ident4.rhs, ident4.lhs)
+setequal(ident4.rhs, ident4.lhs)
+
+as.data.frame(ident4.rhs)
+as.data.frame(ident4.lhs)
+
+ident4.rhs <- my.cartesian(union(a, b), c)
+ident4.lhs <- union(my.cartesian(a, c), my.cartesian(b, c))
+
+setequal(ident4.rhs, ident4.lhs)
+
+as.data.frame(ident4.rhs)
+as.data.frame(ident4.lhs)
+```
+
+## References
+
+Enderton, H. (1977). *Elements of Set Theory* (1st ed.). New York: Academic Press.
+
+MacGillivray, G., "Cartesian Products and Relations." Victoria, BC. Retrieved from http://www.math.uvic.ca/faculty/gmacgill/guide/RF.pdf
+
+Stacho, Juraj (n.d.), "Cartesian Product" [PowerPoint slides]. Retrieved from http://www.cs.toronto.edu/~stacho/macm101.pdf

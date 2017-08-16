@@ -1,0 +1,200 @@
+Solv
+
+Solvers ...
+
+Solver overview, stiffness, accuracy
+
+Overview
+
+Integration methods: package deSolve [22]
+
+Euler
+	Runge−Kutta
+		Explicit RK - non−stiff problems
+		Implicit RK - stiff problems
+	Linear Multistep
+		Adams - non−stiff problems
+		BDF - stiff problems
+
+Solver overview: package deSolve
+
+- ode, ode.band, ode.1D, ode.2D, ode.3D: top level functions (wrappers) 
+
+- red: functionality added by us
+
+Options of solver functions 
+
+Top level function
+
+> ode(y, times, func, parms,
+	method = c("lsoda", "lsode", "lsodes", "lsodar",
+			   "vode", "daspk",
+			   "euler", "rk4", "ode23", "ode45", "radau",
+			   "bdf", "bdf_d", "adams", "impAdams",
+			   "impAdams_d", "iteration"), ...)
+
+Workhorse function: the individual solver
+
+> lsoda(y, times, func, parms, rtol = 1e-6, atol = 1e-6,
+ jacfunc = NULL, jactype = "fullint", rootfunc = NULL,
+ verbose = FALSE, nroot = 0, tcrit = NULL,
+ hmin = 0, hmax = NULL, hini = 0, ynames = TRUE,
+ maxordn = 12, maxords = 5, bandup = NULL, banddown = NULL,
+ maxsteps = 5000, dllname = NULL, initfunc = dllname,
+ initpar = parms, rpar = NULL, ipar = NULL, nout = 0,
+ outnames = NULL, forcings = NULL, initforc = NULL,
+ fcontrol = NULL, events = NULL, lags = NULL,...)
+
+Arghhh, which solver and which options??? 
+
+Problem type?
+
+- ODE: use ode,
+
+- DDE: use dede,
+
+- DAE: daspk or radau,
+
+- PDE: ode.1D, ode.2D, ode.3D,
+
+...others for specific purposes, e.g. root finding, difference equations (euler, iteration) or just to have a comprehensive solver suite (rk4, ode45).
+
+Stiffness
+
+- default solver lsoda selects method automatically,
+
+- adams or bdf may speed up a little bit if degree of stiffness is known,
+
+- vode or radau may help in difficult situations.
+
+Stiffness
+
+Solvers for stiff systems
+
+Stiffness
+
+- Difficult to give a precise definition.
+
+- ≈ system where some components change more rapidly than others
+
+Sometimes difficult to solve:
+
+- solution can be numerically unstable,
+
+- may require very small time steps (slow!),
+
+- deSolve contains solvers that are suitable for stiff systems
+
+But: “stiff solvers” slightly less efficient for“well behaving”systems.
+
+- Good news: lsoda selects automatically between stiff solver (bdf) and nonstiff method (adams).
+
+Van der Pol equation
+
+Oscillating behavior of electrical circuits containing tubes [24].
+
+2nd order ODE
+
+y′′ − μ(1−y2)y′ +y = 0 
+
+... mustbetransformedintotwo1st orderequations
+
+y1′ = y2
+
+y2′ =μ·(1−y12)·y2 −y1
+
+- Initial values for state variables at t = 0: y1(t =0) = 2, y2(t =0) = 0
+
+- One parameter: μ = large → stiff system; μ = small → non-stiff.
+
+Model implementation
+
+> library(deSolve)
+> vdpol <- function (t, y, mu) {
+		list(c( y[2],
+		mu * (1 - y[1]^2) * y[2] - y[1]
+	))
+}
+> yini <- c(y1 = 2, y2 = 0)
+> stiff <- ode(y = yini, func = vdpol, times = 0:3000, parms = 1000)
+> nonstiff <- ode(y = yini, func = vdpol, times = seq(0, 30, 0.01), parms = 1)
+> head(stiff, n = 5)
+
+Interactive exercise
+
+- The following link opens in a web browser. It requires a recent version of Firefox or Chrome, ideally in full-screen mode. Use Cursor keys for slide transition:
+
+- Left cursor guides you through the full presentation.
+
+- Mouse and mouse wheel for full-screen panning and zoom.
+
+- Pos1 brings you back to the first slide.
+    + examples/vanderpol/vanderpol.svg
+
+- The following opens the code as text file for life demonstrations in R
+    + examples/vanderpol/vanderpol.R.txt
+
+Plotting
+
+Stiff solution
+
+> plot(stiff, type = "l", which = "y1",
+ lwd = 2, ylab = "y",
+ main = "IVP ODE, stiff")
+
+Nonstiff solution
+
+> plot(nonstiff, type = "l", which = "y1", + lwd = 2, ylab = "y", main = "IVP ODE, nonstiff")
+
+Default solver, lsoda:
+
+> system.time(stiff <- ode(yini, 0:3000, vdpol, parms = 1000))
+
+> system.time(nonstiff <- ode(yini, seq(0, 30, by = 0.01), vdpol, parms = 1))
+
+Implicit solver, bdf:
+
+> system.time(stiff <- ode(yini, 0:3000, vdpol, parms = 1000, method = "bdf"))
+
+> system.time(nonstiff <- ode(yini, seq(0, 30, by = 0.01), vdpol, parms = 1, method = "bdf") )
+
+⇒ Now use other solvers, e.g. adams, ode45, radau.
+
+Results
+
+Timing results; your computer may be faster:
+
+solver non-stiff stiff 
+ode23  0.37      271.19 
+lsoda  0.26        0.23 
+adams  0.13      616.13 
+bdf    0.15        0.22 
+radau  0.53        0.72
+
+Comparison of solvers for a stiff and a non-stiff parametrisation of the van der Pol equation (time in seconds, mean values of ten simulations on my old AMD X2 3000 CPU).
+
+Accuracy and stability
+
+- Options atol and rtol specify accuracy,
+
+- Stability can be influenced by specifying hmax and maxsteps.
+
+Accuracy and stability - ctd
+
+atol (default 10−6) defines absolute threshold,
+
+- select appropriate value, depending of the size of your
+state variables,
+
+- may be between ≈ 10−300 (or even zero) and ≈ 10300.
+
+rtol (default 10−6) defines relative threshold,
+
+- It makes no sense to specify values < 10−15 because
+of the limited numerical resolution of double precision arithmetics (≈ 16 digits).
+
+hmax is automatically set to the largest difference in times, to avoid that the simulation possibly ignores short-term events. Sometimes, it may be set to a smaller value to improve robustness of a simulation.
+
+hmin should normally not be changed.
+
+Example: Setting rtol and atol: examples/PCmod_atol_0.R.txt

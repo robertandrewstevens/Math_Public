@@ -1,0 +1,291 @@
+Under control: Forcing functions and events
+
+Discontinuities in dynamic models
+
+Most solvers assume that dynamics is smooth However, there can be several types of discontinuities:
+
+- Non-smooth external variables
+
+- Discontinuities in the derivatives
+
+- Discontinuites in the values of the state variables
+
+A solver does not have large problems with first two types of discontinuities, but changing the values of state variables is much more difficult.
+
+External Variables
+
+External variables in dynamic models
+
+...also called forcing functions
+
+Why external variables?
+
+- Some important phenomena are not explicitly included in a differential equation model, but imposed as a time series. (e.g. sunlight, important for plant growth is never“modeled”).
+
+- Somehow, during the integration, the model needs to know the value of the external variable at each time step!
+
+External variables in dynamic models 
+
+Implementation in R
+
+- R has an ingenious function that is especially suited for this task: function approxfun
+
+- It is used in two steps:
+    + First an interpolating function is constructed, that contains the data.
+    + This is done before solving the differential equation.
+      
+    afun <- approxfun(data)
+
+    + Within the derivative function, this interpolating function is called to provide the interpolated value at the requested time point (t):
+    
+    tvalue <- afun(t)
+
+?forcings will open a help file
+
+Example: Predator-Prey model with time-varying input
+
+This example is from [16]
+
+Create an artificial time-series
+
+> times <- seq(0, 100, by = 0.1)
+> signal <- as.data.frame(list(times = times, import = rep(0, length(times))))
+> signal$import <- ifelse((trunc(signal$times) %% 2 == 0), 0, 1)
+> signal[8:12,]
+]
+
+Create the interpolating function, using approxfun
+
+> input <- approxfun(signal, rule = 2)
+> input(seq(from = 0.98, to = 1.01, by = 0.005)) 
+
+Use interpolation function in ODE function
+
+> SPCmod <- function(t, x, parms) {
+  with(as.list(c(parms, x)), {
+    import <- input(t)
+    dS <- import - b*S*P+g*C
+    dP <- c*S*P - d*C*P
+    dC <- e*P*C - f*C
+    res <- c(dS, dP, dC)
+    list(res, signal = import)
+  }) 
+}
+> parms <- c(b = 0.1, c = 0.1, d = 0.1, e = 0.1, f = 0.1, g = 0) 
+> xstart <- c(S = 1, P = 1, C = 1)
+> out <- ode(y = xstart, times = times, func = SPCmod, parms)
+
+Plotting model output
+
+> plot(out)
+
+Discontinuities in dynamic models: Events 
+
+What?
+
+- An event is when the values of state variables change abruptly. Events in Most Programming Environments
+
+- When an event occurs, the simulation needs to be restarted.
+
+- Use of loops etc. ...
+
+- Cumbersome, messy code
+
+Events in R
+
+- Events are part of a model; no restart necessary
+
+- Separate dynamics inbetween events from events themselves 
+
+- Very neat and efficient!
+
+Discontinuities in dynamic models, Events 
+
+Two different types of events in R
+
+- Events occur at known times
+
+- Simple changes can be specified in a data.frame with:
+    + name of state variable that is affected
+    + the time of the event
+    + the magnitude of the event
+    + event method (“replace”,“add”,“multiply”)
+
+- More complex events can be specified in an event function that returns the changed values of the state variables
+function(t, y, parms, ...).
+
+- Events occur when certain conditions are met
+    + Event is triggered by a root function
+    + Event is specified in an event function
+
+?events will open a help file
+
+A patient injects drugs in the blood
+
+Problem Formulation
+
+- Describe the concentration of the drug in the blood
+
+- Drug injection occurs at known times → data.frame
+
+Dynamics inbetween events
+
+- The drug decays with rate b
+
+- Initially the drug concentration = 0 
+
+> pharmaco <- function(t, blood, p) {
+  dblood <- - b * blood 
+  list(dblood)
+}
+> b <- 0.6
+> yini <- c(blood = 0)
+
+Specifying the event
+
+- Daily doses, at same time of day
+
+- Injection makes the concentration in the blood increase by 40 units. 
+
+- The drug injections are specified in a special event data.frame
+
+> injectevents <- data.frame(var = "blood", 
+                             time = 0:20,
+                             value = 40, 
+                             method = "add")
+> head(injectevents)
+
+Solve model
+
+- Pass events to the solver in a list
+
+- All solvers in deSolve can handle events
+
+- Here we use the “implicit Adams” method
+
+> times <- seq(from = 0, to = 10, by = 1/24)
+> outDrug <- ode(func = pharmaco, times = times, y = yini,
+                 parms = NULL, method = "impAdams",
+                 events = list(data = injectevents))
+
+plotting model output
+
+> plot(outDrug)
+
+An event triggered by a root: A Bouncing Ball
+
+Problem formulation
+
+- A ball is thrown vertically from the ground (y(0) = 0)
+
+- Initial velocity (y’) = 10 m s−1; acceleration g = 9.8 m s−2
+
+- When ball hits the ground, it bounces.
+
+ODEs describe height of the ball above the ground (y)
+
+Specified as 2nd order ODE
+y′′ = −g 
+y(0) = 0 
+y′(0) = 10
+
+Specified as 1st order ODE
+y1′ = y2 
+y2′ = −g 
+y1(0) = 0 
+y2 (0) = 10
+
+Dynamics inbetween events
+
+> library(deSolve)
+> ball <- function(t, y, parms) { 
+  dy1 <- y[2]
+  dy2 <- -9.8
+  list(c(dy1, dy2))
+}
+> yini <- c(height = 0, velocity = 10)
+
+The Ball Hits the Ground and Bounces 
+
+Root: the Ball hits the ground
+
+- The ground is where height = 0 
+
+- Root function is 0 when y1 = 0
+
+> rootfunc <- function(t, y, parms) return (y[1])
+
+Event: the Ball bounces
+
+- The velocity changes sign (-) and is reduced by 10%
+
+- Event function returns changed values of both state variables
+
+> eventfunc <- function(t, y, parms) {
+  y[1] <- 0
+  y[2] <- -0.9*y[2]
+  return(y)
+}
+
+An event triggered by a root: the bouncing ball
+
+Solve model
+
+- Inform solver that event is triggered by root (root = TRUE)
+
+- Pass event function to solver
+
+- Pass root function to solver
+
+> times <- seq(from = 0, to = 20, by = 0.01)
+> out <- ode(times = times, y = yini, func = ball,
+             parms = NULL, rootfun = rootfunc,
+             events = list(func = eventfunc, root = TRUE))
+
+Get information about the root
+
+> attributes(out)$troot
+
+An event triggered by a root: the bouncing ball
+
+> plot(out, select = "height")
+
+An event triggered by a root: the bouncing ball 
+
+Create Movie-like output
+    
+for(i in seq(1, 2001, 10)) {
+  plot(out, which = "height", type = "l", lwd = 1,
+       main = "", xlab = "Time", ylab = "Height")
+  points(t(out[i, 1:2]), pch = 21, lwd = 1, col = 1, cex = 2,
+         bg = rainbow(30, v = 0.6)[20 - abs(out[i, 3]) + 1])
+  Sys.sleep(0.01)
+}
+
+Exercise: Add events to a logistic equation 
+
+ODE: Logistic growth of a population
+
+y′ =r·y·(1− y/K)
+
+r = 1, K = 10, y0 = 2
+
+Events: Population harvested according to several strategies
+
+1. No harvesting
+
+2. Every 2 days the population’s density is reduced to 50%
+
+3. When the population approaches 80% of its carrying capacity, its density is halved.
+
+Tasks:
+
+- Run the model for 20 days
+
+- Implement first strategy in a data.frame
+
+- Second strategy requires root and event function
+
+- Use file examples/logisticEvent.R.txt as a template
+
+[14] Shampine, L. F.; Gladwell, I. and Thompson, S. (2003) Solving ODEs with MATLAB. Cambridge University Press, 2003, 263

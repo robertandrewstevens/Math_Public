@@ -1,0 +1,86 @@
+Matrix formulation of models
+
+Speeding up: Matrices and compiled code
+
+Methods for speeding up
+
+1. Use matrices,
+
+2. Implement essential parts in compiled code (Fortran, C), 
+
+3. Implement the full method in compiled code.
+
+Formulating a model with matrices and vectors can lead to a considerable speed gain – and compact code – while retaining the full flexibility of R. The use of compiled code saves even more CPU time at the cost of a higher development effort.
+
+Use of matrices
+
+A Lotka-Volterra model with 4 species
+
+> model <- function(t, n, parms) {
+ with(as.list(c(n, parms)), {
+ dn1 <- r1*n1 - a13*n1*n3
+ dn2 <- r2*n2 - a24*n2*n4
+ dn3 <- a13*n1*n3 - r3*n3
+ dn4 <- a24*n2*n4 - r4*n4
+ return(list(c(dn1, dn2, dn3, dn4)))
+ })
+}
+> parms <- c(r1 = 0.1, r2 = 0.1, r3 = 0.1, r4 = 0.1, a13 = 0.2, a24 = 0.1) 
+> times = seq(from = 0, to = 500, by = 0.1)
+> n0 =c(n1=1,n2=1,n3=2,n4=2)
+> system.time(out <- ode(n0, times, model, parms))
+
+Source: examples/lv-plain-or-matrix.R.txt
+
+Use of matrices
+
+A Lotka-Volterra model with 4 species
+
+> model <- function(t, n, parms) { 
+  with(parms, {
+    dn <- r*n + n*(A%*%n)
+    return(list(c(dn))) 
+  })
+}
+> parms <- list(
+  r = c(r1 = 0.1, r2 = 0.1, r3 = -0.1, r4 = -0.1),
+  A = matrix(c(0.0, 0.0, -0.2,  0.0, # prey 1
+               0.0, 0.0,  0.0, -0.1, # prey 2
+               0.2, 0.0,  0.0,  0.0, # predator 1; eats prey 1 
+               0.0, 0.1,  0.0,  0.0), # predator 2; eats prey 2
+             nrow = 4, ncol = 4, byrow = TRUE)
+)
+> system.time(out <- ode(n0, times, model, parms))
+
+Source: examples/lv-plain-or-matrix.R.txt
+
+Results
+
+- plot(out) will show the results
+
+- Note that the“plain”version has only 1 to 1 connections, but the matrix model is already full connected (with most connections are zero)
+    + The comparison is insofar unfair that the matrix version (despite faster execution) is more powerful
+
+- Exercise: Create a fully connected model in the plain version for a fair comparison
+
+- A parameter example (e.g. for weak coupling) can be found on: 
+
+http://tolstoy.newcastle.edu.au/R/e7/help/09/06/1230.html
+
+Using compiled code 
+
+All solvers of deSolve
+
+- allow direct communication between solvers and a compiled model.
+
+See vignette ("compiledCode") 
+
+Principle
+
+- Implement core model (and only this) in C or Fortran,
+
+- Use data handling, storage and plotting facilities of R.
+
+examples/compiled_lorenz/compiledcode.svg
+
+[16] Soetaert, K., Petzoldt, T. and Setzer, R. (2009) R-package deSolve, Writing Code in Compiled Languages.

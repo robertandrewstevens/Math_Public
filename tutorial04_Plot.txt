@@ -1,0 +1,135 @@
+Plot
+
+Plotting, scenario comparison, observations
+
+Plotting and printing
+
+Methods for plotting and extracting data in deSolve
+
+- subset extracts specific variables that meet certain constraints.
+
+- plot, hist create one plot per variable, in a number of panels
+
+- image for plotting 1-D, 2-D models
+
+- plot.1D and matplot.1D for plotting 1-D outputs
+
+- ?plot.deSolve opens the main help file
+
+rootSolve has similar functions
+
+- subset extracts specific variables that meet certain constraints.
+
+- plot for 1-D model outputs, image for plotting 2-D, 3-D model outputs
+
+- ?plot.steady1D opens the main help file
+
+Examples
+
+The Lorenz equations
+
+- chaotic dynamic system of ordinary differential equations
+
+- three variables, X, Y and Z represent idealized behavior of the earth’s atmosphere.
+
+> chaos <- function(t, state, parameters) {
+   with(as.list(c(state)), {
+     dx <- -8/3 * x + y * z
+     dy <- -10 * (y - z)
+     dz <- -x * y + 28 * y - z
+     list(c(dx, dy, dz))
+   })
+}
+> yini <-c(x = 1, y = 1, z = 1)
+> yini2 <- yini + c(1e-6, 0, 0)
+> times <- seq(0, 30, 0.01)
+> out <- ode(y = yini, times = times, func = chaos, parms = 0) 
+> out2 <- ode(y = yini2, times = times, func = chaos, parms = 0)
+
+Plotting multiple scenarios
+
+- The default for plotting one or more objects is a line plot
+
+- We can plot as many objects of class deSolve as we want
+
+- By default different outputs get different colors and line types
+
+> plot(out, out2, lwd = 2, lty = 1)
+
+Changing the panel arrangement
+
+- Default: Automatic number of panels per page up to 3 x 3 
+
+- Use mfrow() or mfcol() to overrule
+
+> plot(out, out2, lwd = 2, lty = 1, mfrow = c(1, 3))
+
+- Important: upon returning the default mfrow is NOT restored.
+
+Plotting style
+
+- We can change the style of the dataseries (col, lty, . . . ) 
+    + will be effective for all figures
+
+- We can change individual figure settings (title, labels, . . . )
+    + vector input can be specified by a list; NULL will select the default
+
+> plot(out, out2, col = c("blue", "orange"),
+      main = c("Xvalue", "Yvalue", "Zvalue"),
+      xlim = list(c(20, 30), c(25, 30), NULL), mfrow = c(1, 3))
+
+R’s default plot . . .
+
+is used if we extract single colums from the deSolve object
+
+> plot(out[,"x"], out[,"y"], pch = ".", main = "Lorenz butterfly", xlab = "x", ylab = "y")
+
+Use deSolve’s subset...
+
+...to select values that meet certain conditions
+
+> XY <- subset(out, select = c("x", "y"), subset = y < 10 & x < 40)
+> plot(XY, main = "Lorenz butterfly", xlab = "x", ylab = "y", pch = ".")
+
+Plotting multiple scenarios...
+
+...is simple if number of outputs is known
+
+> derivs <- function(t, y, parms) with (as.list(parms), list(r * y * (1 - y/K)))
+> times <- seq(from = 0, to = 30, by = 0.1)
+> out <- ode(y = c(y = 2), times, derivs, parms = c(r = 1, K = 10)) 
+> out2 <- ode(y = c(y = 12), times, derivs, parms = c(r = 1, K = 10))
+> plot(out, out2, lwd = 2)
+
+Plotting multiple scenarios...
+
+...with many or an unknown number of outputs in a list
+
+> outlist <- list()
+> plist <- cbind(r = runif(30, min = 0.1, max = 5),
+                 K = runif(30, min = 8,   max = 15))
+> for (i in 1:nrow(plist))
+    outlist[[i]] <- ode(y = c(y = 2), times, derivs, parms = plist[i, ])
+> plot(out, outlist)
+
+Observed data
+
+Arguments obs and obspar are used to add observed data
+
+> obs2 <- data.frame(time = c(1, 5, 10, 20, 25),
+                     y = c(12, 10, 8, 9, 10))
+> plot(out, out2, obs = obs2, 
+       obspar = list(col = "red", pch = 18, cex = 2))
+
+Observed data
+
+A list of observed data is allowed
+
+> obs2 <- data.frame(time = c(1, 5, 10, 20, 25), 
+                     y = c(12, 10, 8, 9, 10))
+> obs1 <- data.frame(time = c(1, 5, 10, 20, 25), 
+                     y = c(1, 6, 8, 9, 10))
+> plot(out, out2, col = c("blue", "red"), lwd = 2,
+       obs = list(obs1, obs2), 
+       obspar = list(col = c("blue", "red"), 
+       pch = 18, cex = 2))

@@ -1,0 +1,32 @@
+---
+title: "RARA01"
+author: "Robert A. Stevens"
+date: "September 13, 2016"
+output: html_document
+---
+
+http://www.macalester.edu/aratra/edition2/chapt1.html
+
+Resources for *A Radical Approach to Real Analysis* (2nd edition)
+
+# Chapter 1: Crisis in Mathematics: Fourier's Series
+
+Additional material:
+
+- The Derivation of Fourier's Solution (Chap1a.pdf)
+
+- Laplace's Equation (Chap1b.pdf)
+
+- Finding the Coefficients (FourierCoefficients.pdf)
+
+- Approximating Fourier's Solution (chapt1_1_3.html)
+
+- The General Solution (Chap1c.pdf)
+
+- The Orthogonality Relation (Chap1d.pdf)
+
+- Fourier Series as Complex Power Series (Chap1e.pdf)
+
+Maple (maple.html) and Mathematica (chapter1.nb) code for exercises
+
+(The Mathematica notebook may download as a text file that may need to be pasted into a Mathematica notebook in order to be read. The Maple code is on an html file from which it can be copied.)

@@ -1,0 +1,204 @@
+Diffusion, advection and reaction: Partial differential equations (PDE) with ReacTran
+
+Partial Differential Equations
+
+Many second-order PDEs can be written as advection-diffusion problems:
+
+∂C/∂t =−v(∂C/∂x) +D(∂^2C/∂x^2) + f(t, x, C)   
+
+... same for 2-D and 3-D
+
+Example: wave equation in 1-D
+
+∂^2u/∂t^2  = c^2(∂^2u/∂x^2)
+
+can be written as:
+
+du/dt = v
+
+∂v/∂t = c^2(∂^2u/∂x^2)
+
+Three packages for solving PDEs in R
+
+ReacTran: methods for numerical approximation of PDEs
+
+- tran.1D(C, C.up, C.down, D, v, ...) 
+
+- tran.2D, tran.3D
+
+deSolve: general-purpose solvers for time-varying cases
+
+- ode.1D(y, times, func, parms, nspec, dimens, method, names, ...) 
+
+- ode.2D, ode.3D
+
+rootSolve: special solvers for time-invariant cases
+
+- steady.1D(y, time, func, parms, nspec, dimens, method, names, ...) 
+
+- steady.2D, steady.3D
+
+[18, 22, 17]
+
+Numerical solution of the wave equation
+
+library(ReacTran) # http://desolve.r-forge.r-project.org
+
+# Methods from ReacTran
+wave <- function (t, y, parms) {
+  u <- y[1:N]
+  v <- y[(N+1):(2*N)]
+  du <- v
+  dv <- tran.1D(C = u, C.up = 0, C.down = 0, D = 1,
+                dx = xgrid)$dC
+list(c(du, dv)) 
+}
+
+xgrid <- setup.grid.1D(-100, 100, dx.1 = 0.2)
+x <- xgrid$x.mid
+N <- xgrid$N
+uini <- exp(-0.2*x^2)
+vini <- rep(0, N)
+yini <- c(uini, vini)
+times <- seq (from = 0, to = 50, by = 1)
+
+# Numerical method provided by the deSolve package
+out <- ode.1D(yini, times, wave, parms, method = "adams",
+              names = c("u", "v"), dimens = N)
+
+image(out, grid = x)
+
+Plotting 1-D PDEs: matplot.1D
+
+> outtime <- seq(from = 0, to = 50, by = 10)
+> matplot.1D(out, which = "u", subset = time %in% outtime, grid = x, xlab = "x", ylab = "u", type = "l", lwd = 2, xlim = c(-50, 50), col="black")
+
+Plotting 1-D PDEs: image
+
+> image(out, which = "u", grid = x)
+
+Plotting 1-D PDEs: persp plots
+
+> image(out, which = "u", grid = x, method = "persp", border = NA, col = "lightblue", box = FALSE, shade = 0.5, theta = 0, phi = 60)
+
+Exercise: the Brusselator
+
+Problem formulation
+
+The Brusselator is a model for an auto-catalytic chemical reaction between two products, A and B, and producing also C and D in a number of intermediary steps.
+
+A −k1→ X1
+
+B + X1 −k2→ X2 + C
+
+2X1 + X2 −k3→ 3X1
+
+X1 −k4→ D
+
+where the ki are the reaction rates.
+
+Exercise: Implement the Brusselator in 1-D
+
+∂X1/∂t = D[X1](∂^2X1/∂x^2) + 1 + (X1)^2*X2 −4*X1
+
+∂X2/∂t = D[X2](∂^2X2/∂x^2) + 3X1 −(X1)^2*X2
+
+Tasks
+
+- The grid x extends from 0 to 1, and consists of 50 cells. 
+
+- Initial conditions:
+
+X1(0) = 1 + sin(2∗π∗x) 
+X2(0) = 3 
+
+- Generate output for t = 0,1,...10.
+
+- Use file implementing the wave equation as a template: examples/wave.R.txt
+
+2-D wave equation: Sine-Gordon
+
+Problem formulation
+
+The Sine-Gordon equation is a non-linear hyperbolic (wave-like) partial differential equation involving the sine of the dependent variable.
+
+∂2u/∂t2 = D(∂^2u/∂x^2) + D(∂^2u/∂y^2) − sin(u)   
+
+Rewritten as two first order differential equations:
+
+du/dt = v
+
+∂v/∂t = D(∂^2u/∂x2) + D(∂^2u/∂y2) − sin(u)   
+
+2-D Sine-Gordon in R
+
+grid:
+
+> Nx <- Ny <- 100
+> xgrid <- setup.grid.1D(-7, 7, N = Nx)
+> x <- xgrid$x.mid 
+> ygrid <- setup.grid.1D(-7, 7, N = Ny)
+> y <- ygrid$x.mid
+
+derivative function:
+
+> sinegordon2D <- function(t, C, parms) {
+  u <- matrix(nrow = Nx, ncol = Ny, data = C[1:(Nx*Ny)])
+  v <- matrix(nrow = Nx, ncol = Ny, data = C[(Nx*Ny+1):(2*Nx*Ny)])
+  dv <- tran.2D(C = u, C.x.up = 0, C.x.down = 0, C.y.up = 0, C.y.down = 0, D.x = 1, D.y = 1, dx = xgrid, dy = ygrid)$dC - sin(u) 
+  list(c(v, dv))
+}
+
+initial conditions:
+
+> peak <- function (x, y, x0, y0) return(exp(-((x - x0)^2 + (y - y0)^2)))
+> uini <- outer(x, y, FUN = function(x, y) 
+    peak(x, y, 2, 2) + peak(x, y, -2, -2) + peak(x, y, -2, 2) + peak(x, y, 2, -2)) 
+> vini <- rep(0, Nx*Ny)
+
+solution:
+
+> out <- ode.2D (y = c(uini,vini), times = 0:3, parms = 0, func = sinegordon2D, + names = c("u", "v"), dimens = c(Nx, Ny), method = "ode45")
+
+Plotting 2-D PDEs: image plots
+
+> image(out, which = "u", grid = list(x, y), mfrow = c(2,2), ask = FALSE)
+
+Plotting 2-D PDEs: persp plots
+
+> image(out, which = "u", grid = list(x, y), method = "persp", border = NA, col = "lightblue", box = FALSE, shade = 0.5, theta = 0, phi = 60, mfrow = c(2,2), ask = FALSE)
+
+Movie-like output of 2-D PDEs
+
+out <- ode.2D(y = c(uini, vini), 
+              times = seq(0, 3, by = 0.1),
+              parms = NULL, 
+              func = sinegordon2D,
+              names=c("u", "v"), 
+              dimens = c(Nx, Ny),
+              method = "ode45")
+image(out, which = "u", grid = list(x = x, y = y),
+      method = "persp", border = NA,
+      theta = 30, phi = 60, box = FALSE, ask = FALSE)
+
+Exercise: Implement the Brusselator in 2-D
+
+∂X1/∂t = D[X1]∂2X1/∂x2 + D[X1]∂2X1/∂y2 + 1 + (X1)^2*X2 − 4X1
+
+∂X2/∂t = D[X2]∂2X1/∂x2 +D[X2]∂2X1/∂y2 + 3X1 − (X1)^2*X2
+
+Tasks
+
+- The grids x and y extend from 0 to 1, and consist of 50 cells.
+
+- Parameter settings: diffusion coefficient:
+
+D[X1] = 2; D[X2] =8∗D[X1]
+
+- Initial condition for X1, X2: random numbers inbetween 0 and 1.
+
+- Generate output for t = 0, 1, ... 8
+
+- Use the file implementing the Sine-Gordon equation as a template: examples/sinegordon.R.txt
+
+[7] Lefever, R., Nicolis, G. and Prigogine, I. (1967) On the occurrence of oscillations around the steady state in systems of chemical reactions far from equilibrium Journal of Chemical Physics 47, 1045–1047

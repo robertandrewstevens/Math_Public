@@ -1,0 +1,80 @@
+Delay Differential Equations
+
+What?
+
+Delay Differential Equations are similar to ODEs except that they involve past values of variables and/or derivatives.
+
+DDEs in R: R-package deSolve
+
+- dede solves DDEs
+
+- lagvalue provides lagged values of the state variables
+
+- lagderiv provides lagged values of the derivatives
+
+Example: Chaotic Production of White Blood Cells 
+
+Mackey-Glass Equation:
+
+- y: current density of white blood cells,
+
+- yτ is the density τ time-units in the past, 
+
+- first term equation is production rate
+
+- b is destruction rate
+
+y′ = (ayτ)/(1 + yτ^c) − by
+
+yτ = y(t − τ)
+
+yt = 0.5 for t ≤ 0
+
+- For τ = 10 the output is periodic,
+
+- For τ = 20 cell densities display a chaotic pattern
+
+Solution in R
+
+> library(deSolve)
+> retarded <- function(t, y, parms, tau) {
+  tlag <- t - tau 
+  if (tlag <= 0) 
+    ylag <- 0.5
+  else
+    ylag <- lagvalue(tlag)
+  dy <- 0.2*ylag*1/(1+ylag^10) - 0.1*y 
+  list(dy = dy, ylag = ylag)
+}
+> yinit <- 0.5
+> times <- seq(from = 0, to = 300, by = 0.1)
+> yout1 <- dede(y = yinit, times = times, func = retarded, parms = NULL, tau = 10) 
+> yout2 <- dede(y = yinit, times = times, func = retarded, parms = NULL, tau = 20)
+
+Solution in R
+
+> plot(yout1, lwd = 2, main = "tau=10", ylab = "y", mfrow = c(2, 2), which = 1) 
+> plot(yout1[,-1], type = "l", lwd = 2, xlab = "y")
+> plot(yout2, lwd = 2, main = "tau=20", ylab = "y", mfrow = NULL, which = 1)
+> plot(yout2[,-1], type = "l", lwd = 2, xlab = "y")
+
+Exercise: the Lemming model
+
+A nice variant of the logistic model is the DDE lemming model:
+
+y′ =r·y(1 − y(t − τ)/K)
+
+Use file examples/ddelemming.R.txt as a template to implement this model
+
+- initial condition y(t = 0) = 19.001
+
+- parameter values r = 3.5, τ = 0.74, K = 19 
+
+- history y(t) = 19 for t < 0
+
+- Generate output for t in [0, 40].
+
+
+[9] Mackey, M. C. and Glass, L. (1977) Oscillation and chaos in physiological control systems. Science 197, 287–289
+
+[15] Shampine, L. and Thompson, S. (2001) Solving DDEs in MATLAB. App. Numer. Math. 37, 441-458

@@ -1,0 +1,23 @@
+Intro Models Solv Plot Fit State Forcing DDE PDE DAE CPU End
+Thank you!
+More Info:
+http://desolve.r-forge.r-project.org
+
+Intro Models Solv Plot Fit State Forcing DDE PDE DAE CPU End
+Finally
+Citation
+A lot of effort went in creating this software; please cite it when using it.
+􏰳 deSolve: [22], rootSolve [21], ReacTran [18],
+􏰳 Some complex examples can be found in [20],
+􏰳 A framework to fit differential equation models to data is FME [19],
+􏰳 . . . and don’t forget the authors of the original algorithms [5, 10, 2]!
+Acknowledgments
+􏰳 None of this would be possible without the splendid work of the R Core Team [11],
+􏰳 This presentation was created with Sweave [8],
+􏰳 Creation of the packages made use of R-Forge [23].
+
+Intro Models Solv Plot Fit State Forcing DDE PDE DAE CPU End
+Finally
+
+[3] E. Hairer, S. P. Norsett, and G Wanner. Solving Ordinary Differential Equations I: Nonstiff Problems. Second Revised Edition. Springer-Verlag, Heidelberg, 2009
+
