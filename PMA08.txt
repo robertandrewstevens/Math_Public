@@ -1,0 +1,19 @@
+Principles of Mathematical Analysis (Third Edition)
+
+by Walter Rudin
+
+8.0 Some Special Functions
+
+8.1 Power Series
+
+8.2 the Exponential and Logarithmic Functions
+
+8.3 The Trigonometric Functions
+
+8.4 The Algebraic Completeness of the Complex Field
+
+8.5 Fourier Series
+
+8.6 The Gamma Function
+
+8.7 Exercises

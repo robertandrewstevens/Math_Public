@@ -1,0 +1,25 @@
+Principles of Mathematical Analysis (Third Edition)
+
+by Walter Rudin
+
+10.0 Integration of Differental Forms
+
+10.1 Integration
+
+10.2 Primitive Mappings
+
+10.3 Partitions of Unity
+
+10.4 Change of Variables
+
+10.5 Differential Forms
+
+10.6 Simplexes and Chains
+
+10.7 Stokes' Theorem
+
+10.8 Closed Forms and Exact Forms
+
+10.9 Vector Analysis
+
+10.10 Exercises

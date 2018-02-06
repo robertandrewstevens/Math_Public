@@ -1,0 +1,17 @@
+Principles of Mathematical Analysis (Third Edition)
+
+by Walter Rudin
+
+2.0 Basic Toplogy
+
+2.1 Finite, Countable, and Uncountable Sets
+
+2.2 Metric Spaces
+
+2.3 Compact Sets
+
+2.4 Perfect Sets
+
+2.5 Connected Sets
+
+2.6 Exercises

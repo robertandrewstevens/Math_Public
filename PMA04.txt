@@ -1,0 +1,21 @@
+Principles of Mathematical Analysis (Third Edition)
+
+by Walter Rudin
+
+4.0 Continuity
+
+4.1 Limits of Functions
+
+4.2 Continuous Functions
+
+4.3 Continuity and Compactness
+
+4.4 Continuity and Connectedness
+
+4.5 Discontinuities
+
+4.6 Montonic Functions
+
+4.7 Infinite Limits and Limits at Infinity
+
+4.8 Exercises

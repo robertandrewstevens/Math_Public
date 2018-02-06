@@ -1,0 +1,35 @@
+Principles of Mathematical Analysis (Third Edition)
+
+by Walter Rudin
+
+3.0 Numerical Sequences and Series
+
+3.1 Convergent Sequences
+
+3.2 Subsequences
+
+3.3 Cauchy Sequences
+
+3.4 Upper and Lower Limits
+
+3.5 Some Special Sequences
+
+3.6 Series
+
+3.7 Series of Nonnegative Terms
+
+3.8 The Number e
+
+3.9 The Root and Ratio Tests
+
+3.10 Power Series
+
+3.11 Summation by Parts
+
+3.12 Absolute Convergence
+
+3.13 Additiona and Multiplication of Series
+
+3.14 Rearrangements
+
+3.15 Exercises

@@ -1,0 +1,26 @@
+Principles of Mathematical Analysis (Third Edition)
+
+by Walter Rudin
+
+9.0 Functions of Several Variables
+
+9.1 Linear Transformations
+
+9.2 Differentiation
+
+9.3 The Contration Principle
+
+9.4 The Inverse Function Theorem
+
+9.5 The Implicity Function Theorem
+
+9.6 The Rank Theorem
+
+9.7 Determinants
+
+9.8 Derivatives of Higher Order
+
+9.9 Differentiation of Integrals
+
+9.10 Exercises
+

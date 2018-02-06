@@ -1,0 +1,17 @@
+Principles of Mathematical Analysis (Third Edition)
+
+by Walter Rudin
+
+6.0 The Riemann-Stieltjes Integral
+
+6.1 Definition and Existence of the Integral
+
+6.2 Properties of the Integral
+
+6.3 Integration and Differentiation
+
+6.4 Integration of Vector-valued Functions
+
+6.5 Rectifiable Curves
+
+6.6 Exercises

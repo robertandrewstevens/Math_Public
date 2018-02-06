@@ -1,0 +1,21 @@
+Principles of Mathematical Analysis (Third Edition)
+
+by Walter Rudin
+
+5.0 Differentiation
+
+5.1 The Derivative of a Real Function
+
+5.2 Mean Value Theorems
+
+5.3 The Continuity of Derivatives
+
+5.4 L'Hospital's Rule
+
+5.5 Derivatives of Higher Order
+
+5.6 Taylor's Theorem
+
+5.7 Differentiation of Vector-valued Functions
+
+5.8 Exercises
